@@ -122,11 +122,19 @@ def make_slug(name):
     return slug or uuid.uuid4().hex[:8]
 
 def public_base_url():
-    if config.PUBLIC_BASE_URL: return config.PUBLIC_BASE_URL
-    return request.url_root.rstrip('/')
+    """آدرس پایه عمومی برای QR و لینک‌های مطلق."""
+    if config.PUBLIC_BASE_URL:
+        return config.PUBLIC_BASE_URL.rstrip('/')
+    root = request.url_root.rstrip('/')
+    if request.headers.get('X-Forwarded-Proto', '').lower() == 'https' and root.startswith('http://'):
+        root = 'https://' + root[len('http://'):]
+    return root
 
 def image_public_url(image_id):
-    return public_base_url() + url_for('image_detail', id=image_id)
+    try:
+        return url_for('image_detail', id=image_id, _external=True)
+    except Exception:
+        return public_base_url() + '/image/' + str(image_id)
 
 @app.route('/')
 def index():
@@ -159,19 +167,36 @@ def image_detail(id):
 
 @app.route('/image/<int:id>/qr.png')
 def image_qr(id):
-    if qrcode is None: abort(500)
+    """QR سبک و پایدار — بدون کاراکتر غیر ASCII در نام فایل."""
+    if qrcode is None:
+        abort(503, description='کتابخانه qrcode در دسترس نیست')
     conn = get_db()
-    row = conn.execute("SELECT id, title FROM images WHERE id=?", (id,)).fetchone(); conn.close()
-    if not row: abort(404)
-    qr = qrcode.QRCode(version=None, error_correction=ERROR_CORRECT_M, box_size=10, border=2)
-    qr.add_data(image_public_url(id)); qr.make(fit=True)
-    img = qr.make_image(fill_color='black', back_color='white')
-    buf = io.BytesIO(); img.save(buf, format='PNG'); buf.seek(0)
-    resp = make_response(buf.read())
+    row = conn.execute("SELECT id, title FROM images WHERE id=?", (id,)).fetchone()
+    conn.close()
+    if not row:
+        abort(404)
+    try:
+        target = image_public_url(id)
+        qr = qrcode.QRCode(
+            version=4,
+            error_correction=ERROR_CORRECT_M,
+            box_size=6,
+            border=2,
+        )
+        qr.add_data(target)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color='black', back_color='white')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        data = buf.getvalue()
+    except Exception as e:
+        print('[image_qr] error:', repr(e), flush=True)
+        abort(500, description='ساخت QR ناموفق بود')
+    resp = make_response(data)
     resp.headers['Content-Type'] = 'image/png'
-    safe = ''.join(c if c.isalnum() or c in '-_' else '_' for c in (row['title'] or 'image'))[:40]
-    resp.headers['Content-Disposition'] = f'attachment; filename="qr-{id}-{safe}.png"'
+    resp.headers['Content-Disposition'] = f'attachment; filename="qr-image-{id}.png"'
     resp.headers['Cache-Control'] = 'public, max-age=3600'
+    resp.headers['Content-Length'] = str(len(data))
     return resp
 
 @app.route('/uploads/<path:filename>')
@@ -187,4 +212,3 @@ def health():
     return jsonify(ok=True, time=datetime.now().isoformat(), data_root=DATA_DIR,
                    disk_writable=os.path.isdir(DATA_DIR) and os.access(DATA_DIR, os.W_OK),
                    qrcode_available=qrcode is not None)
-
