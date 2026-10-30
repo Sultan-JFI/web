@@ -381,3 +381,67 @@ a:hover { color: var(--accent); }
   .hero h1 { font-size: 2rem; }
   h1 { font-size: 2rem; }
 }
+
+/* === Image Detail Page === */
+.image-detail-wrap {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 20px 40px;
+}
+.image-detail-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.image-detail-media {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+.image-detail-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 80vh;
+  object-fit: contain;
+}
+.image-detail-meta h1 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+}
+.image-desc {
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  white-space: pre-wrap;
+}
+.image-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.badge {
+  display: inline-block;
+  background: rgba(245, 184, 0, 0.15);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.qr-hint {
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+@media (max-width: 768px) {
+  .image-detail-card {
+    grid-template-columns: 1fr;
+  }
+}

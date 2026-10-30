@@ -66,8 +66,10 @@
             <td style="padding:8px">{{ img.title }}</td>
             <td style="padding:8px;color:var(--text-sub)">{{ img.category_name or 'بدون دسته' }}</td>
             <td style="padding:8px">{{ img.views }}</td>
-            <td style="padding:8px">
-              <form method="post" action="{{ url_for('panel_gallery_delete', id=img.id) }}" onsubmit="return confirm('آیا مطمئن هستید؟')">
+            <td style="padding:8px;white-space:nowrap">
+              <a href="{{ url_for('image_detail', id=img.id) }}" target="_blank" style="color:var(--secondary);font-size:0.8rem;margin-left:8px">مشاهده</a>
+              <a href="{{ url_for('image_qr', id=img.id) }}" style="color:var(--accent);font-size:0.8rem;margin-left:8px">QR</a>
+              <form method="post" action="{{ url_for('panel_gallery_delete', id=img.id) }}" onsubmit="return confirm('آیا مطمئن هستید؟')" style="display:inline">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" style="background:#7f1d1d;color:#fca5a5;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8rem">حذف</button>
               </form>
