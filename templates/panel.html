@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block layout %}
+<div class="panel-layout">
+  <aside class="panel-sidebar">
+    <div class="sidebar-brand">{{ s.site_title }}</div>
+    <a href="{{ url_for('panel_dashboard') }}" class="active">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      داشبورد
+    </a>
+    <a href="{{ url_for('panel_gallery') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      گالری
+    </a>
+    <a href="{{ url_for('panel_gallery_upload') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+      آپلود
+    </a>
+    <a href="{{ url_for('panel_gallery_settings') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.61 3.61 0 0 1 8.4 12c0-1.98 1.62-3.6 3.6-3.6s3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      تنظیمات گالری
+    </a>
+    <a href="{{ url_for('panel_password') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      تغییر رمز
+    </a>
+    <a href="{{ url_for('index') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      مشاهده سایت
+    </a>
+    <a href="{{ url_for('panel_logout') }}">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      خروج
+    </a>
+  </aside>
+
+  <main class="panel-main">
+    <div class="panel-header">
+      <h2>داشبورد</h2>
+      <span style="color:var(--text-sub)">مدیر</span>
+    </div>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}
+    <div class="flash-msg {{ cat }} animate__animated animate__fadeInUp">{{ m }}</div>
+    {% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid" style="margin-bottom:30px">
+      <div class="stat-item glass-card">
+        <div class="number" data-counter="{{ image_count }}">{{ image_count }}</div>
+        <div class="label">تصویر</div>
+      </div>
+      <div class="stat-item glass-card">
+        <div class="number" data-counter="{{ category_count }}">{{ category_count }}</div>
+        <div class="label">دسته‌بندی</div>
+      </div>
+      <div class="stat-item glass-card">
+        <div class="number" data-counter="{{ total_views }}">{{ total_views }}</div>
+        <div class="label">بازدید کل</div>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <h3>تنظیمات سایت</h3>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+          <label for="site_title">عنوان سایت</label>
+          <input type="text" id="site_title" name="site_title" value="{{ s.site_title }}">
+        </div>
+        <div class="form-group">
+          <label for="site_description">توضیحات</label>
+          <textarea id="site_description" name="site_description" rows="3">{{ s.site_description }}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="contact_email">ایمیل تماس</label>
+          <input type="email" id="contact_email" name="contact_email" value="{{ s.contact_email }}" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" name="show_contact" {% if s.show_contact %}checked{% endif %}> نمایش ایمیل تماس</label>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" name="maintenance" {% if s.maintenance %}checked{% endif %}> حالت تعمیر</label>
+        </div>
+        <button class="btn-primary" type="submit">ذخیره تنظیمات</button>
+      </form>
+    </div>
+
+    <div class="glass-card" style="margin-top:20px">
+      <h3>وضعیت ذخیره‌سازی</h3>
+      <p style="color:var(--text-sub);font-size:0.875rem">فایل تنظیمات: <span dir="ltr">{{ settings_file }}</span></p>
+      {% if data_dir_exists %}
+      <p style="color:#6EE7B7;font-size:0.875rem">دیسک پایدار متصل است.</p>
+      {% else %}
+      <p style="color:#FCA5A5;font-size:0.875rem">دیسک در دسترس نیست.</p>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}

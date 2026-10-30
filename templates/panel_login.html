@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block layout %}
+<div class="auth-container">
+  <div class="glass-card auth-card animate__animated animate__fadeInUp">
+    <h1>ورود به پنل مدیریت</h1>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}
+    <div class="flash-msg {{ cat }}">{{ m }}</div>
+    {% endfor %}
+    {% endwith %}
+    <form method="post">
+      <div class="form-group">
+        <label for="password">رمز عبور</label>
+        <input type="password" id="password" name="password" autofocus required>
+      </div>
+      <button class="btn-primary" type="submit" style="width:100%">ورود</button>
+    </form>
+    <p style="text-align:center;margin-top:16px"><a href="{{ url_for('index') }}">بازگشت به سایت</a></p>
+  </div>
+</div>
+{% endblock %}
