@@ -14,13 +14,11 @@
 </div>
 {% endif %}
 
-<!-- Hero -->
 <section class="hero" id="hero">
   <h1 data-aos="fade-up">{{ s.site_title }}</h1>
   <p data-aos="fade-up" data-aos-delay="100">{{ s.site_description or 'مجموعه‌ای از زیباترین تصاویر مذهبی' }}</p>
 </section>
 
-<!-- Category Filter -->
 <div style="max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
   <a href="{{ url_for('index') }}" class="btn-secondary" style="{% if not active_cat %}background:var(--accent);color:#000{% endif %}">همه</a>
   {% for cat in categories %}
@@ -28,17 +26,16 @@
   {% endfor %}
 </div>
 
-<!-- Gallery Grid -->
 <main style="max-width:1100px;margin:0 auto;padding:20px">
   {% if images %}
   <div class="gallery-grid">
     {% for img in images %}
     <div class="glass-card gallery-item" data-aos="fade-up" data-aos-delay="{{ (loop.index % 4) * 100 }}">
-      <a href="{{ url_for('static', filename='') }}../data/uploads/{{ img.filename }}" target="_blank">
+      <a href="{{ url_for('image_detail', id=img.id) }}">
         <img src="{{ url_for('serve_thumbnail', filename=img.thumbnail or img.filename) }}" alt="{{ img.title }}" loading="lazy">
       </a>
       <div class="gallery-item-info">
-        <strong>{{ img.title }}</strong>
+        <strong><a href="{{ url_for('image_detail', id=img.id) }}" style="color:inherit">{{ img.title }}</a></strong>
         {% if img.category_name %}<small class="muted">{{ img.category_name }}</small>{% endif %}
       </div>
     </div>
@@ -50,7 +47,6 @@
   </div>
   {% endif %}
 
-  <!-- Pagination -->
   {% if total_pages > 1 %}
   <div style="display:flex;justify-content:center;gap:12px;margin-top:30px">
     {% if page > 1 %}
