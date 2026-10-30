@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block layout %}
+<header class="site-header">
+  <span class="brand">{{ s.site_title }}</span>
+  <nav>
+    <a href="{{ url_for('index') }}">گالری</a>
+    {% if img.category_slug %}
+    <a href="{{ url_for('index', category=img.category_slug) }}">{{ img.category_name }}</a>
+    {% endif %}
+    <a href="{{ url_for('panel') }}">پنل مدیریت</a>
+  </nav>
+</header>
+
+<main class="image-detail-wrap">
+  <div class="glass-card image-detail-card">
+    <div class="image-detail-media">
+      <img src="{{ url_for('serve_upload', filename=img.filename) }}" alt="{{ img.title }}" class="image-detail-img">
+    </div>
+    <div class="image-detail-meta">
+      <h1>{{ img.title }}</h1>
+      {% if img.description %}
+      <p class="image-desc">{{ img.description }}</p>
+      {% endif %}
+      <div class="image-meta-row">
+        {% if img.category_name %}
+        <span class="badge">{{ img.category_name }}</span>
+        {% endif %}
+        <span class="muted">{{ img.views }} بازدید</span>
+        {% if img.tags %}
+        <span class="muted">{{ img.tags }}</span>
+        {% endif %}
+      </div>
+      <div class="image-actions">
+        <a class="btn-primary" href="{{ url_for('image_qr', id=img.id) }}">دریافت QR Code</a>
+        <a class="btn-secondary" href="{{ url_for('serve_upload', filename=img.filename) }}" target="_blank" rel="noopener">باز کردن تصویر کامل</a>
+        <a class="btn-secondary" href="{{ url_for('index') }}">بازگشت به گالری</a>
+      </div>
+      <p class="muted qr-hint">با اسکن QR، دیگران مستقیم به همین صفحه هدایت می‌شوند.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <p>{{ s.site_title }} — Flask + رانفلر</p>
+</footer>
+{% endblock %}
