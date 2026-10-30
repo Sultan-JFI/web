@@ -31,9 +31,12 @@
         {% endif %}
       </div>
       <div class="image-actions">
-        <a class="btn-primary" href="{{ url_for('image_qr', id=img.id) }}">دریافت QR Code</a>
+        <button type="button" class="btn-primary" id="btn-download-qr" data-url="{{ image_url }}" data-id="{{ img.id }}">دریافت QR Code</button>
         <a class="btn-secondary" href="{{ url_for('serve_upload', filename=img.filename) }}" target="_blank" rel="noopener">باز کردن تصویر کامل</a>
         <a class="btn-secondary" href="{{ url_for('index') }}">بازگشت به گالری</a>
+      </div>
+      <div id="qr-preview" style="margin-top:16px;display:none">
+        <canvas id="qr-canvas" style="background:#fff;padding:8px;border-radius:8px;max-width:220px"></canvas>
       </div>
       <p class="muted qr-hint">با اسکن QR، دیگران مستقیم به همین صفحه هدایت می‌شوند.</p>
     </div>
@@ -43,4 +46,37 @@
 <footer class="site-footer">
   <p>{{ s.site_title }} — Flask + رانفلر</p>
 </footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script>
+(function () {
+  var btn = document.getElementById('btn-download-qr');
+  if (!btn || typeof QRCode === 'undefined') return;
+  var url = btn.getAttribute('data-url');
+  var id = btn.getAttribute('data-id');
+  var canvas = document.getElementById('qr-canvas');
+  var preview = document.getElementById('qr-preview');
+
+  btn.addEventListener('click', function () {
+    QRCode.toCanvas(canvas, url, { width: 220, margin: 2 }, function (err) {
+      if (err) {
+        alert('ساخت QR ناموفق بود');
+        return;
+      }
+      preview.style.display = 'block';
+      canvas.toBlob(function (blob) {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'qr-image-' + id + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      });
+    });
+  });
+})();
+</script>
 {% endblock %}
